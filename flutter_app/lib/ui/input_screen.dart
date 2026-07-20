@@ -172,7 +172,7 @@ class _ProductInputCard extends StatelessWidget {
                 SizedBox(
                   width: 112,
                   child: DropdownButtonFormField<ComparisonUnit>(
-                    value: input.unit,
+                    initialValue: input.unit,
                     decoration: const InputDecoration(
                       labelText: '単位',
                       border: OutlineInputBorder(),
