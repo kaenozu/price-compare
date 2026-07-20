@@ -1,5 +1,12 @@
 package com.pricecompare.pricing
 
+import com.pricecompare.model.Decimal
+import com.pricecompare.model.Money
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+
 /**
  * src/commonTest/kotlin/com/pricecompare/pricing/PriceCalculatorTest.kt
  *
@@ -12,10 +19,6 @@ package com.pricecompare.pricing
  * - src/commonMain/kotlin/com/pricecompare/model/PurchaseContext.kt
  * - src/commonTest/resources/test_cases.json
  */
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 
 class PriceCalculatorTest {
 

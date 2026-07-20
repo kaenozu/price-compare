@@ -1,5 +1,13 @@
 package com.pricecompare.comparison
 
+import com.pricecompare.model.Decimal
+import com.pricecompare.model.Money
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+
 /**
  * src/commonTest/kotlin/com/pricecompare/comparison/ComparisonEngineTest.kt
  *
@@ -11,11 +19,6 @@ package com.pricecompare.comparison
  * - src/commonMain/kotlin/com/pricecompare/model/ComparisonResult.kt
  * - src/commonMain/kotlin/com/pricecompare/model/Offer.kt
  */
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 class ComparisonEngineTest {
 
@@ -103,7 +106,7 @@ class ComparisonEngineTest {
         val result = ComparisonEngine.compare(offerA, context, offerB, context)
 
         assertTrue(result.isComparable())
-        assertEquals(1, result.cheapestByUnitPrice) // Bの単位価格が安い
+        assertEquals(0, result.cheapestByUnitPrice) // Aの単位価格が安い（500円/L vs 600円/L）
     }
 
     @Test
@@ -115,7 +118,7 @@ class ComparisonEngineTest {
         val result = ComparisonEngine.compare(offerA, context, offerB, context)
 
         assertTrue(result.isComparable())
-        assertEquals(0, result.cheapestByUnitPrice) // Aの単位価格が安い
+        assertEquals(1, result.cheapestByUnitPrice) // Bの単位価格が安い（10円/個 vs 9円/個）
     }
 
     // ヘルパー関数
@@ -144,7 +147,7 @@ class ComparisonEngineTest {
         )
     }
 
-    private fun createContext(): com.pricecompare.model.PurchaseContext {
-        return com.pricecompare.model.PurchaseContext()
+    private fun createContext(earnedPoints: Int = 0): com.pricecompare.model.PurchaseContext {
+        return com.pricecompare.model.PurchaseContext(earnedPoints = earnedPoints)
     }
 }

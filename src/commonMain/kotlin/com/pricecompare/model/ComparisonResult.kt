@@ -28,10 +28,10 @@ data class ComparisonResult(
     val cheapestByUnitPrice: Int?,
 
     /** 支払額の差 */
-    val payableDifference: Money?,
+    val payableDifference: Money,
 
     /** 実質負担額の差 */
-    val effectiveDifference: Money?,
+    val effectiveDifference: Money,
 
     /** 単位価格の差率 */
     val unitPriceDifferenceRatio: Decimal?,
@@ -62,8 +62,8 @@ data class ComparisonResult(
             cheapestByPayable = null,
             cheapestByEffective = null,
             cheapestByUnitPrice = null,
-            payableDifference = null,
-            effectiveDifference = null,
+            payableDifference = (breakdownA.payableNow - breakdownB.payableNow).abs(),
+            effectiveDifference = (breakdownA.effectiveCost - breakdownB.effectiveCost).abs(),
             unitPriceDifferenceRatio = null,
             warnings = warnings,
             incompatibilityReason = reason

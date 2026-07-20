@@ -1,5 +1,10 @@
 package com.pricecompare.pricing
 
+import com.pricecompare.model.Decimal
+import com.pricecompare.model.Money
+import com.pricecompare.model.TaxMode
+import com.pricecompare.util.Rounding
+
 /**
  * src/commonMain/kotlin/com/pricecompare/pricing/TaxCalculator.kt
  *
@@ -22,8 +27,11 @@ object TaxCalculator {
         return when (taxMode) {
             TaxMode.TAX_EXCLUDED -> price
             TaxMode.TAX_INCLUDED -> {
+                // 税抜 = 税込 - 税額
+                // 税額 = roundMoney(税込 × 税率 / (1 + 税率))
                 val divisor = Decimal.ONE + taxRate
-                Rounding.roundMoney(price.amount / divisor)
+                val taxAmount = Rounding.roundMoney(price.amount * taxRate / divisor)
+                price - taxAmount
             }
         }
     }
@@ -37,9 +45,9 @@ object TaxCalculator {
 
     /**
      * 税込価格を計算する。
+     * 税込表示の場合は表示価格そのままを返す（端数の再計算によるズレを防ぐ）。
      */
-    fun priceIncludingTax(basePrice: Money, taxRate: Decimal): Money {
-        val tax = taxAmount(basePrice, taxRate)
-        return basePrice + tax
+    fun priceIncludingTax(basePrice: Money, taxRate: Decimal, originalPrice: Money? = null): Money {
+        return originalPrice ?: (basePrice + taxAmount(basePrice, taxRate))
     }
 }

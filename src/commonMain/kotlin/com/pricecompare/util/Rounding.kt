@@ -1,5 +1,8 @@
 package com.pricecompare.util
 
+import com.pricecompare.model.Decimal
+import com.pricecompare.model.Money
+
 /**
  * src/commonMain/kotlin/com/pricecompare/util/Rounding.kt
  *
@@ -14,19 +17,31 @@ package com.pricecompare.util
 object Rounding {
 
     /**
-     * 金額の丸め（小数点以下を切り上げ）。
-     * Decimalの小数点以下をtruncateして整数部分のみ返す。
+     * 金額の丸め（小数点以下を切り上げ、整数部分のみ）。
      */
     fun roundMoney(value: Decimal): Money {
         val plainString = value.toPlainString()
-        val integerPart = plainString.split(".")[0]
-        val rounded = if (integerPart.startsWith("-")) {
-            val abs = integerPart.removePrefix("-")
-            if (abs.isEmpty()) "0" else "-$abs"
+        val parts = plainString.split(".")
+        val integerPart = parts[0]
+
+        if (parts.size == 1) return Money(Decimal(integerPart))
+
+        val decimalPart = parts[1]
+        if (decimalPart.isEmpty()) return Money(Decimal(integerPart))
+
+        // 小数点第1位でHALF_UP
+        val firstDigit = decimalPart[0].digitToInt()
+        val result = if (firstDigit >= 5) {
+            // 整数部を+1
+            val isNegative = integerPart.startsWith("-")
+            val absInt = if (isNegative) integerPart.removePrefix("-") else integerPart
+            val incremented = (absInt.toLong() + 1).toString()
+            if (isNegative) "-$incremented" else incremented
         } else {
-            integerPart.ifEmpty { "0" }
+            integerPart
         }
-        return Money(Decimal(rounded))
+
+        return Money(Decimal(result))
     }
 
     /**
@@ -41,20 +56,18 @@ object Rounding {
         val integerPart = parts[0]
         var decimalPart = parts[1]
 
-        if (decimalPart.length > 6) {
-            // 7桁目でHALF_UP
-            val seventhDigit = decimalPart[6].digitToInt()
-            decimalPart = decimalPart.substring(0, 6)
-            if (seventhDigit >= 5) {
-                // 6桁目をインクリメント
-                val lastDigit = decimalPart.last().digitToInt()
-                if (lastDigit < 9) {
-                    decimalPart = decimalPart.dropLast(1) + (lastDigit + 1).toString()
-                } else {
-                    // キャリーオーバー
-                    decimalPart = decimalPart.dropLast(1) + "0"
-                    // 簡易キャリー（整数部には影響しない前提）
-                }
+        if (decimalPart.length <= 6) return value
+
+        // 7桁目でHALF_UP
+        val seventhDigit = decimalPart[6].digitToInt()
+        decimalPart = decimalPart.substring(0, 6)
+        if (seventhDigit >= 5) {
+            // 6桁目をインクリメント
+            val lastDigit = decimalPart.last().digitToInt()
+            if (lastDigit < 9) {
+                decimalPart = decimalPart.dropLast(1) + (lastDigit + 1).toString()
+            } else {
+                decimalPart = decimalPart.dropLast(1) + "0"
             }
         }
 

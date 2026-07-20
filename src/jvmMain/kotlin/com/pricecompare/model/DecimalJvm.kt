@@ -36,8 +36,10 @@ actual class Decimal actual constructor(value: String) {
     actual fun stripTrailingZeros(): Decimal =
         Decimal(underlying.stripTrailingZeros().toPlainString())
 
-    actual fun toPlainString(): String =
-        underlying.toPlainString()
+    actual fun toPlainString(): String {
+        val stripped = underlying.stripTrailingZeros()
+        return stripped.toPlainString()
+    }
 
     override fun toString(): String = underlying.toString()
 

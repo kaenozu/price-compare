@@ -33,14 +33,14 @@ data class PriceBreakdown(
     /** 送料 */
     val shippingCost: Money?,
 
-    /** 今回の支払額（null = 送料未入力で確定不可） */
-    val payableNow: Money?,
+    /** 今回の支払額 */
+    val payableNow: Money,
 
     /** 獲得ポイント評価額 */
     val earnedPointsValue: Money,
 
-    /** 実質負担額（null = 支払額未確定） */
-    val effectiveCost: Money?,
+    /** 実質負担額 */
+    val effectiveCost: Money,
 
     /** 単位価格（null = 容量未設定 or 次元不一致） */
     val unitPrice: Decimal?,
@@ -60,9 +60,9 @@ data class PriceBreakdown(
             totalCouponDiscount = Money.ZERO,
             pointRedemption = Money.ZERO,
             shippingCost = null,
-            payableNow = null,
+            payableNow = Money.ZERO,
             earnedPointsValue = Money.ZERO,
-            effectiveCost = null,
+            effectiveCost = Money.ZERO,
             unitPrice = null,
             warnings = emptyList()
         )

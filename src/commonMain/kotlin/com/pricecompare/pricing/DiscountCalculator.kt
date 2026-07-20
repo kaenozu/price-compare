@@ -1,5 +1,10 @@
 package com.pricecompare.pricing
 
+import com.pricecompare.model.Decimal
+import com.pricecompare.model.Discount
+import com.pricecompare.model.Money
+import com.pricecompare.util.Rounding
+
 /**
  * src/commonMain/kotlin/com/pricecompare/pricing/DiscountCalculator.kt
  *

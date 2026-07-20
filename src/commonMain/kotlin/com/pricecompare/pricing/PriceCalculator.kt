@@ -1,5 +1,11 @@
 package com.pricecompare.pricing
 
+import com.pricecompare.model.Decimal
+import com.pricecompare.model.Money
+import com.pricecompare.model.Offer
+import com.pricecompare.model.PriceBreakdown
+import com.pricecompare.model.PurchaseContext
+
 /**
  * src/commonMain/kotlin/com/pricecompare/pricing/PriceCalculator.kt
  *
@@ -38,7 +44,11 @@ object PriceCalculator {
 
         // 2. 税計算
         val taxAmount = TaxCalculator.taxAmount(baseExcludingTax, offer.taxRate)
-        val priceIncludingTax = baseExcludingTax + taxAmount
+        // 税込表示の場合は表示価格そのまま（端数の再計算によるズレを防止）
+        val priceIncludingTax = TaxCalculator.priceIncludingTax(
+            baseExcludingTax, offer.taxRate,
+            originalPrice = if (offer.taxMode == com.pricecompare.model.TaxMode.TAX_INCLUDED) offer.displayedPrice else null
+        )
 
         // 3. 商品値引き
         val itemDiscountResult = DiscountCalculator.applyItemDiscounts(
@@ -56,22 +66,15 @@ object PriceCalculator {
             warnings.add("送料が未入力のため、確定比較ではありません")
         }
 
-        // 6. 支払額計算
-        val payableNow = if (effectiveShipping != null) {
-            couponResult.discountedAmount + effectiveShipping - context.usedPointsValue()
-        } else {
-            null
-        }
+        // 6. 支払額計算（送料未入力の場合は0円として計算）
+        val shippingForCalc = effectiveShipping ?: Money.ZERO
+        val payableNow = couponResult.discountedAmount + shippingForCalc - context.usedPointsValue()
 
         // 7. 獲得ポイント評価
         val earnedPointsValue = context.earnedPointsValue()
 
         // 8. 実質負担額
-        val effectiveCost = if (payableNow != null) {
-            payableNow - earnedPointsValue
-        } else {
-            null
-        }
+        val effectiveCost = payableNow - earnedPointsValue
 
         // 9. 単位価格
         val unitPrice = UnitNormalizer.calculateUnitPrice(
