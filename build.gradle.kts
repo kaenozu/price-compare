@@ -1,6 +1,7 @@
 plugins {
-    kotlin("multiplatform") version "2.0.0"
-    kotlin("plugin.serialization") version "2.0.0"
+    kotlin("multiplatform")
+    kotlin("plugin.serialization")
+    id("com.android.library")
 }
 
 group = "com.pricecompare"
@@ -13,6 +14,12 @@ kotlin {
         }
         testRuns["test"].executionTask.configure {
             useJUnitPlatform()
+        }
+    }
+
+    androidTarget {
+        compilations.all {
+            kotlinOptions.jvmTarget = "17"
         }
     }
 
@@ -35,5 +42,21 @@ kotlin {
         val jvmTest by getting {
             dependsOn(commonTest)
         }
+
+        val androidMain by getting
+    }
+}
+
+android {
+    namespace = "com.pricecompare.engine"
+    compileSdk = 34
+
+    defaultConfig {
+        minSdk = 24
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
