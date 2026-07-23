@@ -3,6 +3,18 @@
 build/
 !gradle/wrapper/gradle-wrapper.jar
 
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+coverage/
+**/doc/api/
+**/android/local.properties
+**/android/key.properties
+**/ios/Flutter/ephemeral/
+
 # IDE
 .idea/
 *.iml
