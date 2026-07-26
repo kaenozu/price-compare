@@ -42,15 +42,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
-
-      - name: Set up Java
-        uses: actions/setup-java@v5
         with:
-          distribution: temurin
-          java-version: "17"
-
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v6
+          show-progress: false
 
       - name: Run Kotlin engine tests
-        run: bash ./gradlew jvmTest --no-daemon --stacktrace
+        shell: bash
+        run: |
+          export JAVA_HOME="$JAVA_HOME_17_X64"
+          export PATH="$JAVA_HOME/bin:$PATH"
+          java -version
+          bash ./gradlew jvmTest --no-daemon --stacktrace
