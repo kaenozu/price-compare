@@ -102,4 +102,44 @@ void main() {
     expect(state.shippingCost, '300');
     expect(state.result?.cheapestByPayable, ComparisonWinner.productA);
   });
+
+  test('クーポンを設定して状態が更新される', () {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    final notifier = container.read(priceCompareProvider.notifier);
+    notifier.updateCouponAmount('200');
+
+    final state = container.read(priceCompareProvider);
+    expect(state.couponAmount, '200');
+  });
+
+  test('クーポンありの比較でcouponAmountが結果に反映される', () {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    final notifier = container.read(priceCompareProvider.notifier);
+    notifier.updateCouponAmount('300');
+    notifier.updateInputA(
+      const ProductInput(
+        displayedPrice: '1000',
+        taxRatePercent: '10',
+        quantity: '1',
+        unit: ComparisonUnit.count,
+      ),
+    );
+    notifier.updateInputB(
+      const ProductInput(
+        displayedPrice: '1500',
+        taxRatePercent: '10',
+        quantity: '1',
+        unit: ComparisonUnit.count,
+      ),
+    );
+
+    expect(notifier.compare(), isTrue);
+    final state = container.read(priceCompareProvider);
+    expect(state.couponAmount, '300');
+    expect(state.result?.cheapestByPayable, ComparisonWinner.productA);
+  });
 }

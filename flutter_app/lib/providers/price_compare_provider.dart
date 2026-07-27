@@ -44,6 +44,7 @@ class PriceCompareState {
   final ProductInput inputA;
   final ProductInput inputB;
   final String shippingCost;
+  final String couponAmount;
   final ComparisonResult? result;
   final String? errorMessage;
 
@@ -51,6 +52,7 @@ class PriceCompareState {
     this.inputA = const ProductInput(),
     this.inputB = const ProductInput(),
     this.shippingCost = '',
+    this.couponAmount = '',
     this.result,
     this.errorMessage,
   });
@@ -64,6 +66,7 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
       inputA: input,
       inputB: state.inputB,
       shippingCost: state.shippingCost,
+      couponAmount: state.couponAmount,
       result: state.result,
     );
   }
@@ -73,6 +76,7 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
       inputA: state.inputA,
       inputB: input,
       shippingCost: state.shippingCost,
+      couponAmount: state.couponAmount,
       result: state.result,
     );
   }
@@ -82,6 +86,17 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
       inputA: state.inputA,
       inputB: state.inputB,
       shippingCost: shippingCost,
+      couponAmount: state.couponAmount,
+      result: state.result,
+    );
+  }
+
+  void updateCouponAmount(String couponAmount) {
+    state = PriceCompareState(
+      inputA: state.inputA,
+      inputB: state.inputB,
+      shippingCost: state.shippingCost,
+      couponAmount: couponAmount,
       result: state.result,
     );
   }
@@ -101,6 +116,7 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
         inputA: state.inputA,
         inputB: state.inputB,
         shippingCost: state.shippingCost,
+        couponAmount: state.couponAmount,
         result: result,
       );
       return true;
@@ -117,6 +133,7 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
       inputA: state.inputA,
       inputB: state.inputB,
       shippingCost: state.shippingCost,
+      couponAmount: state.couponAmount,
     );
   }
 
@@ -146,9 +163,16 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
 
   PurchaseContext _toPurchaseContext() {
     final shipping = state.shippingCost.trim();
-    return shipping.isEmpty
-        ? PurchaseContext()
-        : PurchaseContext(shippingCost: Money(Decimal(shipping)));
+    final coupon = state.couponAmount.trim();
+    final shippingCost =
+        shipping.isEmpty ? null : Money(Decimal(shipping));
+    final coupons = coupon.isEmpty
+        ? <CouponDiscount>[]
+        : [CouponDiscount(Money(Decimal(coupon)), name: 'クーポン')];
+    return PurchaseContext(
+      shippingCost: shippingCost,
+      orderCoupons: coupons,
+    );
   }
 
   void _setError(String message) {
@@ -156,6 +180,7 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
       inputA: state.inputA,
       inputB: state.inputB,
       shippingCost: state.shippingCost,
+      couponAmount: state.couponAmount,
       errorMessage: message,
     );
   }
