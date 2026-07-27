@@ -33,8 +33,7 @@ class PurchaseContext {
 
   bool isShippingFree(Money subtotalAfterCoupons) {
     final threshold = freeShippingThreshold;
-    return threshold != null &&
-        subtotalAfterCoupons.amount >= threshold.amount;
+    return threshold != null && subtotalAfterCoupons.amount >= threshold.amount;
   }
 
   Money? effectiveShipping(Money subtotalAfterCoupons) {
@@ -45,11 +44,9 @@ class PurchaseContext {
     return isShippingFree(subtotalAfterCoupons) ? Money.zero : shipping;
   }
 
-  Money earnedPointsValue() => Money(
-        Decimal.fromInt(earnedPoints) * pointEvaluationRate,
-      );
+  Money earnedPointsValue() =>
+      Money(Decimal.fromInt(earnedPoints) * pointEvaluationRate);
 
-  Money usedPointsValue() => Money(
-        Decimal.fromInt(usedPoints) * pointEvaluationRate,
-      );
+  Money usedPointsValue() =>
+      Money(Decimal.fromInt(usedPoints) * pointEvaluationRate);
 }

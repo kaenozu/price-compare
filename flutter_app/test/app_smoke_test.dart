@@ -5,11 +5,7 @@ import 'package:price_compare_flutter/main.dart';
 
 void main() {
   testWidgets('価格比較フォームを表示し、必須入力を検証できる', (tester) async {
-    await tester.pumpWidget(
-      const ProviderScope(
-        child: PriceCompareApp(),
-      ),
-    );
+    await tester.pumpWidget(const ProviderScope(child: PriceCompareApp()));
 
     expect(find.text('商品A'), findsOneWidget);
     expect(find.text('商品B'), findsOneWidget);

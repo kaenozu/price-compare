@@ -8,10 +8,7 @@ abstract final class Rounding {
   static Decimal roundUnitPrice(Decimal value) =>
       _roundHalfUp(value, fractionDigits: 6);
 
-  static Decimal _roundHalfUp(
-    Decimal value, {
-    required int fractionDigits,
-  }) {
+  static Decimal _roundHalfUp(Decimal value, {required int fractionDigits}) {
     if (fractionDigits < 0) {
       throw ArgumentError.value(
         fractionDigits,

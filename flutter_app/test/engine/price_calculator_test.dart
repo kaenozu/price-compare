@@ -16,19 +16,12 @@ void main() {
         displayedPrice: Money.of('1000'),
         taxMode: TaxMode.taxIncluded,
         taxRate: Decimal('0.1'),
-        quantity: Quantity(
-          value: Decimal('500'),
-          unit: ComparisonUnit.gram,
-        ),
-        discounts: [
-          PercentageDiscount(Decimal('0.1')),
-        ],
+        quantity: Quantity(value: Decimal('500'), unit: ComparisonUnit.gram),
+        discounts: [PercentageDiscount(Decimal('0.1'))],
       );
       final context = PurchaseContext(
         shippingCost: Money.of('50'),
-        orderCoupons: [
-          CouponDiscount(Money.of('100')),
-        ],
+        orderCoupons: [CouponDiscount(Money.of('100'))],
         usedPoints: 20,
         earnedPoints: 30,
       );
@@ -48,10 +41,7 @@ void main() {
         displayedPrice: Money.of('3000'),
         taxMode: TaxMode.taxIncluded,
         taxRate: Decimal('0.1'),
-        quantity: Quantity(
-          value: Decimal('1'),
-          unit: ComparisonUnit.count,
-        ),
+        quantity: Quantity(value: Decimal('1'), unit: ComparisonUnit.count),
       );
       final context = PurchaseContext(
         shippingCost: Money.of('500'),

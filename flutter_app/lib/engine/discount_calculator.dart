@@ -21,8 +21,7 @@ abstract final class DiscountCalculator {
     var totalDiscount = Money.zero;
 
     for (final discount in discounts) {
-      if (discount is FixedAmountDiscount ||
-          discount is PercentageDiscount) {
+      if (discount is FixedAmountDiscount || discount is PercentageDiscount) {
         final discountAmount = discount.calculateAmount(currentAmount);
         currentAmount = currentAmount - discountAmount;
         totalDiscount = totalDiscount + discountAmount;

@@ -4,8 +4,7 @@ import 'quantity.dart';
 import 'rounding.dart';
 
 abstract final class UnitNormalizer {
-  static Quantity normalizeQuantity(Quantity quantity) =>
-      quantity.normalize();
+  static Quantity normalizeQuantity(Quantity quantity) => quantity.normalize();
 
   static bool areComparable(Quantity quantityA, Quantity quantityB) =>
       quantityA.isCompatibleWith(quantityB);

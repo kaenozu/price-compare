@@ -7,11 +7,7 @@ import 'purchase_context.dart';
 import 'rounding.dart';
 import 'unit_normalizer.dart';
 
-enum ComparisonWinner {
-  productA,
-  productB,
-  tie,
-}
+enum ComparisonWinner { productA, productB, tie }
 
 class ComparisonResult {
   final PriceBreakdown breakdownA;
@@ -55,18 +51,15 @@ abstract final class ComparisonEngine {
       ...breakdownB.warnings,
     }.toList(growable: false);
 
-    if (!UnitNormalizer.areComparable(
-      offerA.quantity,
-      offerB.quantity,
-    )) {
+    if (!UnitNormalizer.areComparable(offerA.quantity, offerB.quantity)) {
       return ComparisonResult(
         breakdownA: breakdownA,
         breakdownB: breakdownB,
         cheapestByPayable: null,
         cheapestByEffective: null,
         cheapestByUnitPrice: null,
-        payableDifference:
-            (breakdownA.payableNow - breakdownB.payableNow).abs(),
+        payableDifference: (breakdownA.payableNow - breakdownB.payableNow)
+            .abs(),
         effectiveDifference:
             (breakdownA.effectiveCost - breakdownB.effectiveCost).abs(),
         unitPriceDifferenceRatio: null,
@@ -92,10 +85,9 @@ abstract final class ComparisonEngine {
         breakdownA.unitPrice,
         breakdownB.unitPrice,
       ),
-      payableDifference:
-          (breakdownA.payableNow - breakdownB.payableNow).abs(),
-      effectiveDifference:
-          (breakdownA.effectiveCost - breakdownB.effectiveCost).abs(),
+      payableDifference: (breakdownA.payableNow - breakdownB.payableNow).abs(),
+      effectiveDifference: (breakdownA.effectiveCost - breakdownB.effectiveCost)
+          .abs(),
       unitPriceDifferenceRatio: _unitPriceDifferenceRatio(
         breakdownA.unitPrice,
         breakdownB.unitPrice,

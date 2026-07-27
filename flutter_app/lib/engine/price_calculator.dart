@@ -8,10 +8,7 @@ import 'tax_mode.dart';
 import 'unit_normalizer.dart';
 
 abstract final class PriceCalculator {
-  static PriceBreakdown calculate(
-    Offer offer,
-    PurchaseContext context,
-  ) {
+  static PriceBreakdown calculate(Offer offer, PurchaseContext context) {
     final warnings = <String>[];
 
     final baseExcludingTax = TaxCalculator.basePriceExcludingTax(
@@ -19,8 +16,7 @@ abstract final class PriceCalculator {
       offer.taxMode,
       offer.taxRate,
     );
-    final taxAmount =
-        TaxCalculator.taxAmount(baseExcludingTax, offer.taxRate);
+    final taxAmount = TaxCalculator.taxAmount(baseExcludingTax, offer.taxRate);
     final priceIncludingTax = TaxCalculator.priceIncludingTax(
       baseExcludingTax,
       offer.taxRate,
@@ -38,15 +34,17 @@ abstract final class PriceCalculator {
       context.orderCoupons,
     );
 
-    final effectiveShipping =
-        context.effectiveShipping(couponResult.discountedAmount);
+    final effectiveShipping = context.effectiveShipping(
+      couponResult.discountedAmount,
+    );
     if (context.shippingCost == null) {
       warnings.add('送料が未入力のため、確定比較ではありません');
     }
     final shippingForCalculation = effectiveShipping ?? Money.zero;
 
     final pointRedemption = context.usedPointsValue();
-    final payableNow = couponResult.discountedAmount +
+    final payableNow =
+        couponResult.discountedAmount +
         shippingForCalculation -
         pointRedemption;
     final earnedPointsValue = context.earnedPointsValue();

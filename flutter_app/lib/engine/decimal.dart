@@ -6,8 +6,7 @@ class Decimal implements Comparable<Decimal> {
 
   factory Decimal(String value) {
     final input = value.trim();
-    final match =
-        RegExp(r'^([+-]?)(\d*)(?:\.(\d*))?$').firstMatch(input);
+    final match = RegExp(r'^([+-]?)(\d*)(?:\.(\d*))?$').firstMatch(input);
     if (match == null) {
       throw FormatException('Invalid decimal: $value');
     }
@@ -19,8 +18,7 @@ class Decimal implements Comparable<Decimal> {
       throw FormatException('Invalid decimal: $value');
     }
 
-    final digits =
-        '${integerPart.isEmpty ? '0' : integerPart}$fractionalPart';
+    final digits = '${integerPart.isEmpty ? '0' : integerPart}$fractionalPart';
     final unscaled = BigInt.parse(digits) * BigInt.from(sign);
     return Decimal.fromUnscaled(unscaled, fractionalPart.length);
   }
@@ -28,8 +26,7 @@ class Decimal implements Comparable<Decimal> {
   factory Decimal.fromInt(int value) =>
       Decimal.fromUnscaled(BigInt.from(value), 0);
 
-  factory Decimal.fromBigInt(BigInt value) =>
-      Decimal.fromUnscaled(value, 0);
+  factory Decimal.fromBigInt(BigInt value) => Decimal.fromUnscaled(value, 0);
 
   factory Decimal.fromUnscaled(BigInt unscaled, int scale) {
     if (scale < 0) {
@@ -87,8 +84,7 @@ class Decimal implements Comparable<Decimal> {
       );
     }
 
-    final numerator =
-        _unscaled * _pow10(other.scale + resultScale);
+    final numerator = _unscaled * _pow10(other.scale + resultScale);
     final denominator = other._unscaled * _pow10(scale);
     final quotient = _divideHalfUp(numerator, denominator);
     return Decimal.fromUnscaled(quotient, resultScale);
@@ -133,9 +129,7 @@ class Decimal implements Comparable<Decimal> {
 
   @override
   bool operator ==(Object other) =>
-      other is Decimal &&
-      _unscaled == other._unscaled &&
-      scale == other.scale;
+      other is Decimal && _unscaled == other._unscaled && scale == other.scale;
 
   @override
   int get hashCode => Object.hash(_unscaled, scale);

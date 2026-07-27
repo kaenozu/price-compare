@@ -33,13 +33,7 @@ void main() {
     final state = container.read(priceCompareProvider);
     expect(state.errorMessage, isNull);
     expect(state.result, isNotNull);
-    expect(
-      state.result?.cheapestByPayable,
-      ComparisonWinner.productA,
-    );
-    expect(
-      state.result?.cheapestByUnitPrice,
-      ComparisonWinner.tie,
-    );
+    expect(state.result?.cheapestByPayable, ComparisonWinner.productA);
+    expect(state.result?.cheapestByUnitPrice, ComparisonWinner.tie);
   });
 }

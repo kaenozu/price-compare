@@ -30,14 +30,13 @@ class ProductInput {
     String? taxRatePercent,
     String? quantity,
     ComparisonUnit? unit,
-  }) =>
-      ProductInput(
-        displayedPrice: displayedPrice ?? this.displayedPrice,
-        taxMode: taxMode ?? this.taxMode,
-        taxRatePercent: taxRatePercent ?? this.taxRatePercent,
-        quantity: quantity ?? this.quantity,
-        unit: unit ?? this.unit,
-      );
+  }) => ProductInput(
+    displayedPrice: displayedPrice ?? this.displayedPrice,
+    taxMode: taxMode ?? this.taxMode,
+    taxRatePercent: taxRatePercent ?? this.taxRatePercent,
+    quantity: quantity ?? this.quantity,
+    unit: unit ?? this.unit,
+  );
 }
 
 class PriceCompareState {
@@ -77,8 +76,7 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
     try {
       final offerA = _toOffer('商品A', state.inputA);
       final offerB = _toOffer('商品B', state.inputB);
-      final zeroShippingContext =
-          PurchaseContext(shippingCost: Money.zero);
+      final zeroShippingContext = PurchaseContext(shippingCost: Money.zero);
       final result = ComparisonEngine.compare(
         offerA: offerA,
         contextA: zeroShippingContext,
@@ -100,10 +98,7 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
   }
 
   void clearResult() {
-    state = PriceCompareState(
-      inputA: state.inputA,
-      inputB: state.inputB,
-    );
+    state = PriceCompareState(inputA: state.inputA, inputB: state.inputB);
   }
 
   Offer _toOffer(String name, ProductInput input) {
@@ -117,8 +112,7 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
     if (quantity <= Decimal.zero) {
       throw ArgumentError('数量は0より大きい値を入力してください');
     }
-    if (taxRatePercent < Decimal.zero ||
-        taxRatePercent > Decimal('100')) {
+    if (taxRatePercent < Decimal.zero || taxRatePercent > Decimal('100')) {
       throw ArgumentError('税率は0〜100%で入力してください');
     }
 
@@ -142,5 +136,5 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
 
 final priceCompareProvider =
     StateNotifierProvider<PriceCompareNotifier, PriceCompareState>(
-  (ref) => PriceCompareNotifier(),
-);
+      (ref) => PriceCompareNotifier(),
+    );

@@ -1,10 +1,6 @@
 import 'decimal.dart';
 
-enum UnitDimension {
-  weight,
-  capacity,
-  count,
-}
+enum UnitDimension { weight, capacity, count }
 
 enum ComparisonUnit {
   gram('g', UnitDimension.weight, '1'),
@@ -22,11 +18,10 @@ enum ComparisonUnit {
   Decimal get conversionFactor => Decimal(_factor);
 
   ComparisonUnit get baseUnit => switch (dimension) {
-        UnitDimension.weight => ComparisonUnit.gram,
-        UnitDimension.capacity => ComparisonUnit.milliliter,
-        UnitDimension.count => ComparisonUnit.count,
-      };
+    UnitDimension.weight => ComparisonUnit.gram,
+    UnitDimension.capacity => ComparisonUnit.milliliter,
+    UnitDimension.count => ComparisonUnit.count,
+  };
 
-  bool isSameDimension(ComparisonUnit other) =>
-      dimension == other.dimension;
+  bool isSameDimension(ComparisonUnit other) => dimension == other.dimension;
 }

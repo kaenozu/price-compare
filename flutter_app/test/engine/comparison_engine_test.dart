@@ -16,17 +16,13 @@ void main() {
     required String price,
     required String quantity,
     required ComparisonUnit unit,
-  }) =>
-      Offer(
-        productName: name,
-        displayedPrice: Money.of(price),
-        taxMode: TaxMode.taxIncluded,
-        taxRate: Decimal('0.1'),
-        quantity: Quantity(
-          value: Decimal(quantity),
-          unit: unit,
-        ),
-      );
+  }) => Offer(
+    productName: name,
+    displayedPrice: Money.of(price),
+    taxMode: TaxMode.taxIncluded,
+    taxRate: Decimal('0.1'),
+    quantity: Quantity(value: Decimal(quantity), unit: unit),
+  );
 
   group('ComparisonEngine', () {
     test('kgとgを正規化して最安商品を判定する', () {

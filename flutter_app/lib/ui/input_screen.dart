@@ -66,9 +66,9 @@ class _InputScreenState extends ConsumerState<InputScreen> {
 
     final message =
         ref.read(priceCompareProvider).errorMessage ?? '入力内容を確認してください';
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 }
 
@@ -100,13 +100,11 @@ class _ProductInputCard extends StatelessWidget {
                 suffixText: '円',
                 border: OutlineInputBorder(),
               ),
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
-              validator: (value) => _validateDecimal(
-                value,
-                label: '表示価格',
-                allowZero: true,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
               ),
+              validator: (value) =>
+                  _validateDecimal(value, label: '表示価格', allowZero: true),
               onChanged: (value) =>
                   onChanged(input.copyWith(displayedPrice: value)),
             ),
@@ -119,16 +117,14 @@ class _ProductInputCard extends StatelessWidget {
                 FilterChip(
                   label: const Text('税込'),
                   selected: input.taxMode == TaxMode.taxIncluded,
-                  onSelected: (_) => onChanged(
-                    input.copyWith(taxMode: TaxMode.taxIncluded),
-                  ),
+                  onSelected: (_) =>
+                      onChanged(input.copyWith(taxMode: TaxMode.taxIncluded)),
                 ),
                 FilterChip(
                   label: const Text('税抜'),
                   selected: input.taxMode == TaxMode.taxExcluded,
-                  onSelected: (_) => onChanged(
-                    input.copyWith(taxMode: TaxMode.taxExcluded),
-                  ),
+                  onSelected: (_) =>
+                      onChanged(input.copyWith(taxMode: TaxMode.taxExcluded)),
                 ),
               ],
             ),
@@ -140,8 +136,9 @@ class _ProductInputCard extends StatelessWidget {
                 suffixText: '%',
                 border: OutlineInputBorder(),
               ),
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               validator: _validateTaxRate,
               onChanged: (value) =>
                   onChanged(input.copyWith(taxRatePercent: value)),
@@ -157,13 +154,11 @@ class _ProductInputCard extends StatelessWidget {
                       labelText: '数量・容量',
                       border: OutlineInputBorder(),
                     ),
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
-                    validator: (value) => _validateDecimal(
-                      value,
-                      label: '数量',
-                      allowZero: false,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
                     ),
+                    validator: (value) =>
+                        _validateDecimal(value, label: '数量', allowZero: false),
                     onChanged: (value) =>
                         onChanged(input.copyWith(quantity: value)),
                   ),
@@ -211,9 +206,7 @@ class _ProductInputCard extends StatelessWidget {
     try {
       final decimal = Decimal(value);
       if (allowZero ? decimal < Decimal.zero : decimal <= Decimal.zero) {
-        return allowZero
-            ? '$labelは0以上で入力してください'
-            : '$labelは0より大きい値を入力してください';
+        return allowZero ? '$labelは0以上で入力してください' : '$labelは0より大きい値を入力してください';
       }
       return null;
     } on FormatException {
@@ -222,11 +215,7 @@ class _ProductInputCard extends StatelessWidget {
   }
 
   static String? _validateTaxRate(String? value) {
-    final basic = _validateDecimal(
-      value,
-      label: '税率',
-      allowZero: true,
-    );
+    final basic = _validateDecimal(value, label: '税率', allowZero: true);
     if (basic != null) {
       return basic;
     }

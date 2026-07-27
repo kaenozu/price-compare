@@ -34,8 +34,7 @@ class Money implements Comparable<Money> {
   String toString() => '${amount.toPlainString()}円';
 
   @override
-  bool operator ==(Object other) =>
-      other is Money && amount == other.amount;
+  bool operator ==(Object other) => other is Money && amount == other.amount;
 
   @override
   int get hashCode => amount.hashCode;

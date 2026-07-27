@@ -14,8 +14,7 @@ abstract final class TaxCalculator {
     }
 
     final divisor = Decimal.one + taxRate;
-    final taxAmount =
-        Rounding.roundMoney(price.amount * taxRate / divisor);
+    final taxAmount = Rounding.roundMoney(price.amount * taxRate / divisor);
     return price - taxAmount;
   }
 
@@ -26,6 +25,5 @@ abstract final class TaxCalculator {
     Money basePrice,
     Decimal taxRate, {
     Money? originalPrice,
-  }) =>
-      originalPrice ?? (basePrice + taxAmount(basePrice, taxRate));
+  }) => originalPrice ?? (basePrice + taxAmount(basePrice, taxRate));
 }

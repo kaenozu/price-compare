@@ -24,8 +24,7 @@ final class PercentageDiscount extends Discount {
   const PercentageDiscount(this.rate);
 
   @override
-  Money calculateAmount(Money baseAmount) =>
-      Money(baseAmount.amount * rate);
+  Money calculateAmount(Money baseAmount) => Money(baseAmount.amount * rate);
 }
 
 final class CouponDiscount extends Discount {

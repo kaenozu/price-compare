@@ -31,10 +31,7 @@ void main() {
       final base = Money.of('900');
       final rate = Decimal('0.1');
 
-      expect(
-        TaxCalculator.taxAmount(base, rate).amount.toPlainString(),
-        '90',
-      );
+      expect(TaxCalculator.taxAmount(base, rate).amount.toPlainString(), '90');
       expect(
         TaxCalculator.priceIncludingTax(base, rate).amount.toPlainString(),
         '990',
