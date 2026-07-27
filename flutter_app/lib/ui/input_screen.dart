@@ -40,6 +40,8 @@ class _InputScreenState extends ConsumerState<InputScreen> {
               onChanged: notifier.updateInputB,
             ),
             const SizedBox(height: 24),
+            _ShippingSection(shippingCost: state.shippingCost),
+            const SizedBox(height: 24),
             FilledButton(
               onPressed: () => _compare(context),
               child: const Padding(
@@ -221,5 +223,42 @@ class _ProductInputCard extends StatelessWidget {
     }
     final rate = Decimal(value!);
     return rate > Decimal('100') ? '税率は100%以下で入力してください' : null;
+  }
+}
+
+class _ShippingSection extends ConsumerWidget {
+  const _ShippingSection({required this.shippingCost});
+
+  final String shippingCost;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final notifier = ref.read(priceCompareProvider.notifier);
+    return Card(
+      child: ExpansionTile(
+        title: const Text('送料・割引・ポイント'),
+        subtitle: shippingCost.isEmpty
+            ? const Text('未設定')
+            : Text('送料 ${shippingCost}円'),
+        initiallyExpanded: shippingCost.isEmpty,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: TextFormField(
+              initialValue: shippingCost,
+              decoration: const InputDecoration(
+                labelText: '送料',
+                suffixText: '円',
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              onChanged: notifier.updateShippingCost,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -36,4 +36,70 @@ void main() {
     expect(state.result?.cheapestByPayable, ComparisonWinner.productA);
     expect(state.result?.cheapestByUnitPrice, ComparisonWinner.tie);
   });
+
+  test('送料を設定して比較できる', () {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    final notifier = container.read(priceCompareProvider.notifier);
+    notifier.updateShippingCost('500');
+
+    final state = container.read(priceCompareProvider);
+    expect(state.shippingCost, '500');
+  });
+
+  test('空の送料で比較するとPurchaseContextのshippingCostはnullになる', () {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    final notifier = container.read(priceCompareProvider.notifier);
+    notifier.updateInputA(
+      const ProductInput(
+        displayedPrice: '1000',
+        taxRatePercent: '10',
+        quantity: '1',
+        unit: ComparisonUnit.count,
+      ),
+    );
+    notifier.updateInputB(
+      const ProductInput(
+        displayedPrice: '1500',
+        taxRatePercent: '10',
+        quantity: '1',
+        unit: ComparisonUnit.count,
+      ),
+    );
+
+    expect(notifier.compare(), isTrue);
+    expect(container.read(priceCompareProvider).errorMessage, isNull);
+  });
+
+  test('送料を設定した比較でshippingCostが結果に反映される', () {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    final notifier = container.read(priceCompareProvider.notifier);
+    notifier.updateShippingCost('300');
+    notifier.updateInputA(
+      const ProductInput(
+        displayedPrice: '1000',
+        taxRatePercent: '10',
+        quantity: '1',
+        unit: ComparisonUnit.count,
+      ),
+    );
+    notifier.updateInputB(
+      const ProductInput(
+        displayedPrice: '1200',
+        taxRatePercent: '10',
+        quantity: '1',
+        unit: ComparisonUnit.count,
+      ),
+    );
+
+    expect(notifier.compare(), isTrue);
+    final state = container.read(priceCompareProvider);
+    expect(state.shippingCost, '300');
+    expect(state.result?.cheapestByPayable, ComparisonWinner.productA);
+  });
 }
