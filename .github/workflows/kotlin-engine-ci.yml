@@ -49,10 +49,5 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v6
-        with:
-          gradle-version: "8.7"
-
       - name: Run Kotlin engine tests
-        run: gradle jvmTest --no-daemon --stacktrace
+        run: ./gradlew jvmTest --no-daemon --stacktrace
