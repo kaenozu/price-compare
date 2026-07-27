@@ -53,6 +53,8 @@ class PriceCompareState {
   final ProductInput inputB;
   final String shippingCost;
   final String couponAmount;
+  final String usedPoints;
+  final String earnedPoints;
   final ComparisonResult? result;
   final String? errorMessage;
 
@@ -61,6 +63,8 @@ class PriceCompareState {
     this.inputB = const ProductInput(),
     this.shippingCost = '',
     this.couponAmount = '',
+    this.usedPoints = '',
+    this.earnedPoints = '',
     this.result,
     this.errorMessage,
   });
@@ -69,45 +73,37 @@ class PriceCompareState {
 class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
   PriceCompareNotifier() : super(const PriceCompareState());
 
-  void updateInputA(ProductInput input) {
+  void _updateState({
+    ProductInput? inputA,
+    ProductInput? inputB,
+    String? shippingCost,
+    String? couponAmount,
+    String? usedPoints,
+    String? earnedPoints,
+    ComparisonResult? result,
+  }) {
     state = PriceCompareState(
-      inputA: input,
-      inputB: state.inputB,
-      shippingCost: state.shippingCost,
-      couponAmount: state.couponAmount,
-      result: state.result,
+      inputA: inputA ?? state.inputA,
+      inputB: inputB ?? state.inputB,
+      shippingCost: shippingCost ?? state.shippingCost,
+      couponAmount: couponAmount ?? state.couponAmount,
+      usedPoints: usedPoints ?? state.usedPoints,
+      earnedPoints: earnedPoints ?? state.earnedPoints,
+      result: result,
     );
   }
 
-  void updateInputB(ProductInput input) {
-    state = PriceCompareState(
-      inputA: state.inputA,
-      inputB: input,
-      shippingCost: state.shippingCost,
-      couponAmount: state.couponAmount,
-      result: state.result,
-    );
-  }
+  void updateInputA(ProductInput input) => _updateState(inputA: input);
 
-  void updateShippingCost(String shippingCost) {
-    state = PriceCompareState(
-      inputA: state.inputA,
-      inputB: state.inputB,
-      shippingCost: shippingCost,
-      couponAmount: state.couponAmount,
-      result: state.result,
-    );
-  }
+  void updateInputB(ProductInput input) => _updateState(inputB: input);
 
-  void updateCouponAmount(String couponAmount) {
-    state = PriceCompareState(
-      inputA: state.inputA,
-      inputB: state.inputB,
-      shippingCost: state.shippingCost,
-      couponAmount: couponAmount,
-      result: state.result,
-    );
-  }
+  void updateShippingCost(String v) => _updateState(shippingCost: v);
+
+  void updateCouponAmount(String v) => _updateState(couponAmount: v);
+
+  void updateUsedPoints(String v) => _updateState(usedPoints: v);
+
+  void updateEarnedPoints(String v) => _updateState(earnedPoints: v);
 
   bool compare() {
     try {
@@ -120,13 +116,7 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
         offerB: offerB,
         contextB: context,
       );
-      state = PriceCompareState(
-        inputA: state.inputA,
-        inputB: state.inputB,
-        shippingCost: state.shippingCost,
-        couponAmount: state.couponAmount,
-        result: result,
-      );
+      _updateState(result: result);
       return true;
     } on FormatException catch (error) {
       _setError(error.message);
@@ -136,14 +126,7 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
     return false;
   }
 
-  void clearResult() {
-    state = PriceCompareState(
-      inputA: state.inputA,
-      inputB: state.inputB,
-      shippingCost: state.shippingCost,
-      couponAmount: state.couponAmount,
-    );
-  }
+  void clearResult() => _updateState(result: null);
 
   List<Discount> _parseDiscounts(ProductInput input) {
     final value = input.discountValue.trim();
@@ -187,6 +170,8 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
   PurchaseContext _toPurchaseContext() {
     final shipping = state.shippingCost.trim();
     final coupon = state.couponAmount.trim();
+    final used = state.usedPoints.trim();
+    final earned = state.earnedPoints.trim();
     final shippingCost =
         shipping.isEmpty ? null : Money(Decimal(shipping));
     final coupons = coupon.isEmpty
@@ -195,6 +180,8 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
     return PurchaseContext(
       shippingCost: shippingCost,
       orderCoupons: coupons,
+      usedPoints: used.isEmpty ? 0 : int.parse(used),
+      earnedPoints: earned.isEmpty ? 0 : int.parse(earned),
     );
   }
 
@@ -204,6 +191,8 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
       inputB: state.inputB,
       shippingCost: state.shippingCost,
       couponAmount: state.couponAmount,
+      usedPoints: state.usedPoints,
+      earnedPoints: state.earnedPoints,
       errorMessage: message,
     );
   }

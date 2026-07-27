@@ -43,6 +43,8 @@ class _InputScreenState extends ConsumerState<InputScreen> {
             _ShippingSection(
               shippingCost: state.shippingCost,
               couponAmount: state.couponAmount,
+              usedPoints: state.usedPoints,
+              earnedPoints: state.earnedPoints,
             ),
             const SizedBox(height: 24),
             FilledButton(
@@ -271,19 +273,25 @@ class _ShippingSection extends ConsumerWidget {
   const _ShippingSection({
     required this.shippingCost,
     required this.couponAmount,
+    required this.usedPoints,
+    required this.earnedPoints,
   });
 
   final String shippingCost;
   final String couponAmount;
+  final String usedPoints;
+  final String earnedPoints;
+
+  bool get _hasAny =>
+      [shippingCost, couponAmount, usedPoints, earnedPoints]
+          .any((v) => v.isNotEmpty);
 
   String _subtitle() {
     final parts = <String>[];
-    if (shippingCost.isNotEmpty) {
-      parts.add('送料 ${shippingCost}円');
-    }
-    if (couponAmount.isNotEmpty) {
-      parts.add('クーポン ${couponAmount}円');
-    }
+    if (shippingCost.isNotEmpty) parts.add('送料 ${shippingCost}円');
+    if (couponAmount.isNotEmpty) parts.add('クーポン ${couponAmount}円');
+    if (usedPoints.isNotEmpty) parts.add('使用 ${usedPoints}pt');
+    if (earnedPoints.isNotEmpty) parts.add('獲得 ${earnedPoints}pt');
     return parts.isEmpty ? '未設定' : parts.join(' / ');
   }
 
@@ -294,7 +302,7 @@ class _ShippingSection extends ConsumerWidget {
       child: ExpansionTile(
         title: const Text('送料・割引・ポイント'),
         subtitle: Text(_subtitle()),
-        initiallyExpanded: shippingCost.isEmpty && couponAmount.isEmpty,
+        initiallyExpanded: !_hasAny,
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
@@ -312,7 +320,7 @@ class _ShippingSection extends ConsumerWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
             child: TextFormField(
               initialValue: couponAmount,
               decoration: const InputDecoration(
@@ -324,6 +332,32 @@ class _ShippingSection extends ConsumerWidget {
                 decimal: true,
               ),
               onChanged: notifier.updateCouponAmount,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            child: TextFormField(
+              initialValue: usedPoints,
+              decoration: const InputDecoration(
+                labelText: '使用ポイント',
+                suffixText: 'pt',
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: TextInputType.number,
+              onChanged: notifier.updateUsedPoints,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            child: TextFormField(
+              initialValue: earnedPoints,
+              decoration: const InputDecoration(
+                labelText: '獲得ポイント',
+                suffixText: 'pt',
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: TextInputType.number,
+              onChanged: notifier.updateEarnedPoints,
             ),
           ),
         ],
