@@ -142,4 +142,61 @@ void main() {
     expect(state.couponAmount, '300');
     expect(state.result?.cheapestByPayable, ComparisonWinner.productA);
   });
+
+  test('定額割引を商品Aに適用して比較できる', () {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    final notifier = container.read(priceCompareProvider.notifier);
+    notifier.updateInputA(
+      const ProductInput(
+        displayedPrice: '1000',
+        taxRatePercent: '10',
+        quantity: '1',
+        unit: ComparisonUnit.count,
+        discountValue: '200',
+      ),
+    );
+    notifier.updateInputB(
+      const ProductInput(
+        displayedPrice: '900',
+        taxRatePercent: '10',
+        quantity: '1',
+        unit: ComparisonUnit.count,
+      ),
+    );
+
+    expect(notifier.compare(), isTrue);
+    final state = container.read(priceCompareProvider);
+    expect(state.result?.cheapestByPayable, ComparisonWinner.productA);
+  });
+
+  test('パーセント割引を商品Aに適用して比較できる', () {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    final notifier = container.read(priceCompareProvider.notifier);
+    notifier.updateInputA(
+      const ProductInput(
+        displayedPrice: '1000',
+        taxRatePercent: '10',
+        quantity: '1',
+        unit: ComparisonUnit.count,
+        discountValue: '10',
+        discountIsPercent: true,
+      ),
+    );
+    notifier.updateInputB(
+      const ProductInput(
+        displayedPrice: '950',
+        taxRatePercent: '10',
+        quantity: '1',
+        unit: ComparisonUnit.count,
+      ),
+    );
+
+    expect(notifier.compare(), isTrue);
+    final state = container.read(priceCompareProvider);
+    expect(state.result?.cheapestByPayable, ComparisonWinner.productA);
+  });
 }

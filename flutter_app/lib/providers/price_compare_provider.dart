@@ -15,6 +15,8 @@ class ProductInput {
   final String taxRatePercent;
   final String quantity;
   final ComparisonUnit unit;
+  final String discountValue;
+  final bool discountIsPercent;
 
   const ProductInput({
     this.displayedPrice = '',
@@ -22,6 +24,8 @@ class ProductInput {
     this.taxRatePercent = '10',
     this.quantity = '',
     this.unit = ComparisonUnit.gram,
+    this.discountValue = '',
+    this.discountIsPercent = false,
   });
 
   ProductInput copyWith({
@@ -30,6 +34,8 @@ class ProductInput {
     String? taxRatePercent,
     String? quantity,
     ComparisonUnit? unit,
+    String? discountValue,
+    bool? discountIsPercent,
   }) =>
       ProductInput(
         displayedPrice: displayedPrice ?? this.displayedPrice,
@@ -37,6 +43,8 @@ class ProductInput {
         taxRatePercent: taxRatePercent ?? this.taxRatePercent,
         quantity: quantity ?? this.quantity,
         unit: unit ?? this.unit,
+        discountValue: discountValue ?? this.discountValue,
+        discountIsPercent: discountIsPercent ?? this.discountIsPercent,
       );
 }
 
@@ -137,6 +145,20 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
     );
   }
 
+  List<Discount> _parseDiscounts(ProductInput input) {
+    final value = input.discountValue.trim();
+    if (value.isEmpty) return const [];
+    final amount = Decimal(value);
+    if (amount <= Decimal.zero) return const [];
+    if (input.discountIsPercent) {
+      if (amount > Decimal('100')) {
+        throw ArgumentError('割引率は100%以下で入力してください');
+      }
+      return [PercentageDiscount(amount / Decimal('100'))];
+    }
+    return [FixedAmountDiscount(Money(amount))];
+  }
+
   Offer _toOffer(String name, ProductInput input) {
     final price = Decimal(input.displayedPrice);
     final quantity = Decimal(input.quantity);
@@ -158,6 +180,7 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
       taxMode: input.taxMode,
       taxRate: taxRatePercent / Decimal('100'),
       quantity: Quantity(value: quantity, unit: input.unit),
+      discounts: _parseDiscounts(input),
     );
   }
 
