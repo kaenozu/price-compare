@@ -25,5 +25,6 @@ abstract final class TaxCalculator {
     Money basePrice,
     Decimal taxRate, {
     Money? originalPrice,
-  }) => originalPrice ?? (basePrice + taxAmount(basePrice, taxRate));
+  }) =>
+      originalPrice ?? (basePrice + taxAmount(basePrice, taxRate));
 }

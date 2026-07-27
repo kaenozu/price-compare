@@ -30,13 +30,14 @@ class ProductInput {
     String? taxRatePercent,
     String? quantity,
     ComparisonUnit? unit,
-  }) => ProductInput(
-    displayedPrice: displayedPrice ?? this.displayedPrice,
-    taxMode: taxMode ?? this.taxMode,
-    taxRatePercent: taxRatePercent ?? this.taxRatePercent,
-    quantity: quantity ?? this.quantity,
-    unit: unit ?? this.unit,
-  );
+  }) =>
+      ProductInput(
+        displayedPrice: displayedPrice ?? this.displayedPrice,
+        taxMode: taxMode ?? this.taxMode,
+        taxRatePercent: taxRatePercent ?? this.taxRatePercent,
+        quantity: quantity ?? this.quantity,
+        unit: unit ?? this.unit,
+      );
 }
 
 class PriceCompareState {
@@ -136,5 +137,5 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
 
 final priceCompareProvider =
     StateNotifierProvider<PriceCompareNotifier, PriceCompareState>(
-      (ref) => PriceCompareNotifier(),
-    );
+  (ref) => PriceCompareNotifier(),
+);

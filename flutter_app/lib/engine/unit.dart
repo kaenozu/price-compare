@@ -18,10 +18,10 @@ enum ComparisonUnit {
   Decimal get conversionFactor => Decimal(_factor);
 
   ComparisonUnit get baseUnit => switch (dimension) {
-    UnitDimension.weight => ComparisonUnit.gram,
-    UnitDimension.capacity => ComparisonUnit.milliliter,
-    UnitDimension.count => ComparisonUnit.count,
-  };
+        UnitDimension.weight => ComparisonUnit.gram,
+        UnitDimension.capacity => ComparisonUnit.milliliter,
+        UnitDimension.count => ComparisonUnit.count,
+      };
 
   bool isSameDimension(ComparisonUnit other) => dimension == other.dimension;
 }
