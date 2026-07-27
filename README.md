@@ -52,19 +52,24 @@ Flutter SDKはCIと同じ`3.44.0`を基準にします。
 
 ## Kotlin側の検証
 
+現在は`gradle/wrapper/gradle-wrapper.jar`が欠けているため、CIではGradle 8.7を固定して実行します。
+
 ```bash
-./gradlew jvmTest
+gradle jvmTest
 ```
+
+Wrapperを復旧した後は、環境差を抑えるため`./gradlew jvmTest`を標準コマンドに戻します。
 
 計算仕様を変更する場合は、Kotlin・Dart・Python参照実装の期待値を同じ変更単位で確認します。次の品質タスクは、共通JSONテストベクトルをDart側でも読み込むパリティテストの追加です。
 
 ## 開発優先順位
 
 1. `main`をGitHubの既定ブランチに設定し、必須CIチェックを有効化する
-2. Androidプラットフォーム雛形を生成し、applicationId、アプリ名、minSdk/targetSdk、署名除外を確定する
-3. Android Debug APKをCIでビルドし、入力→比較結果までの実機スモークテストを行う
-4. Kotlin/Dart間の共通テストベクトルによるパリティテストを追加する
-5. 商品名、店舗名、送料、割引、クーポン、ポイント入力をUIへ段階的に追加する
-6. ローカル保存、比較履歴、AdMob/Billingは計算・入力UXが安定してから導入する
+2. Gradle Wrapper JARをGradle 8.7で再生成・コミットし、CIを`./gradlew`へ戻す
+3. Androidプラットフォーム雛形を生成し、applicationId、アプリ名、minSdk/targetSdk、署名除外を確定する
+4. Android Debug APKをCIでビルドし、入力→比較結果までの実機スモークテストを行う
+5. Kotlin/Dart間の共通テストベクトルによるパリティテストを追加する
+6. 商品名、店舗名、送料、割引、クーポン、ポイント入力をUIへ段階的に追加する
+7. ローカル保存、比較履歴、AdMob/Billingは計算・入力UXが安定してから導入する
 
 詳細仕様は[SPEC.md](SPEC.md)を参照してください。
