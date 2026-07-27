@@ -11,6 +11,7 @@ on:
     paths:
       - "flutter_app/**"
       - ".github/workflows/flutter-ci.yml"
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -42,10 +43,51 @@ jobs:
         run: flutter pub get
 
       - name: Check formatting
-        run: dart format --output=none --set-exit-if-changed lib test
+        run: |
+          dart format --output=none --set-exit-if-changed lib test || true
+          dart format lib test
+          FORMAT_DIFF=$(git diff -- '*.dart')
+          if [ -n "$FORMAT_DIFF" ]; then
+            echo "::warning::Formatting diff detected:"
+            echo "$FORMAT_DIFF"
+            echo "::error::Dart files are not formatted."
+            exit 1
+          fi
 
       - name: Analyze
         run: flutter analyze --fatal-infos
 
       - name: Run tests
         run: flutter test
+
+  build:
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: flutter_app
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.44.0"
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build debug APK
+        run: flutter build apk --debug
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: flutter_app/build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 7
