@@ -152,11 +152,11 @@ class _ComparisonCard extends StatelessWidget {
   }
 
   static String _winnerLabel(ComparisonWinner? winner) => switch (winner) {
-    ComparisonWinner.productA => '商品A',
-    ComparisonWinner.productB => '商品B',
-    ComparisonWinner.tie => '同額',
-    null => '比較不能',
-  };
+        ComparisonWinner.productA => '商品A',
+        ComparisonWinner.productB => '商品B',
+        ComparisonWinner.tie => '同額',
+        null => '比較不能',
+      };
 }
 
 class _ValueRow extends StatelessWidget {
@@ -167,21 +167,21 @@ class _ValueRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 6),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(width: 104, child: Text(label)),
-        Expanded(
-          child: Text(
-            value,
-            textAlign: TextAlign.end,
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(width: 104, child: Text(label)),
+            Expanded(
+              child: Text(
+                value,
+                textAlign: TextAlign.end,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+            ),
+          ],
         ),
-      ],
-    ),
-  );
+      );
 }
 
 class _NoResult extends StatelessWidget {
@@ -191,6 +191,6 @@ class _NoResult extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Center(
-    child: FilledButton(onPressed: onBack, child: const Text('入力に戻る')),
-  );
+        child: FilledButton(onPressed: onBack, child: const Text('入力に戻る')),
+      );
 }

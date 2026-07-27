@@ -20,9 +20,8 @@ abstract final class PriceCalculator {
     final priceIncludingTax = TaxCalculator.priceIncludingTax(
       baseExcludingTax,
       offer.taxRate,
-      originalPrice: offer.taxMode == TaxMode.taxIncluded
-          ? offer.displayedPrice
-          : null,
+      originalPrice:
+          offer.taxMode == TaxMode.taxIncluded ? offer.displayedPrice : null,
     );
 
     final itemDiscountResult = DiscountCalculator.applyItemDiscounts(
@@ -43,8 +42,7 @@ abstract final class PriceCalculator {
     final shippingForCalculation = effectiveShipping ?? Money.zero;
 
     final pointRedemption = context.usedPointsValue();
-    final payableNow =
-        couponResult.discountedAmount +
+    final payableNow = couponResult.discountedAmount +
         shippingForCalculation -
         pointRedemption;
     final earnedPointsValue = context.earnedPointsValue();

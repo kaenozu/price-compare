@@ -58,14 +58,13 @@ abstract final class ComparisonEngine {
         cheapestByPayable: null,
         cheapestByEffective: null,
         cheapestByUnitPrice: null,
-        payableDifference: (breakdownA.payableNow - breakdownB.payableNow)
-            .abs(),
+        payableDifference:
+            (breakdownA.payableNow - breakdownB.payableNow).abs(),
         effectiveDifference:
             (breakdownA.effectiveCost - breakdownB.effectiveCost).abs(),
         unitPriceDifferenceRatio: null,
         warnings: warnings,
-        incompatibilityReason:
-            '単位が異なります（${offerA.quantity.unit.symbol} vs '
+        incompatibilityReason: '単位が異なります（${offerA.quantity.unit.symbol} vs '
             '${offerB.quantity.unit.symbol}）。直接比較できません。',
       );
     }
@@ -86,8 +85,8 @@ abstract final class ComparisonEngine {
         breakdownB.unitPrice,
       ),
       payableDifference: (breakdownA.payableNow - breakdownB.payableNow).abs(),
-      effectiveDifference: (breakdownA.effectiveCost - breakdownB.effectiveCost)
-          .abs(),
+      effectiveDifference:
+          (breakdownA.effectiveCost - breakdownB.effectiveCost).abs(),
       unitPriceDifferenceRatio: _unitPriceDifferenceRatio(
         breakdownA.unitPrice,
         breakdownB.unitPrice,
