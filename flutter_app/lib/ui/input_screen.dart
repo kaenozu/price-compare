@@ -40,7 +40,10 @@ class _InputScreenState extends ConsumerState<InputScreen> {
               onChanged: notifier.updateInputB,
             ),
             const SizedBox(height: 24),
-            _ShippingSection(shippingCost: state.shippingCost),
+            _ShippingSection(
+              shippingCost: state.shippingCost,
+              couponAmount: state.couponAmount,
+            ),
             const SizedBox(height: 24),
             FilledButton(
               onPressed: () => _compare(context),
@@ -227,9 +230,24 @@ class _ProductInputCard extends StatelessWidget {
 }
 
 class _ShippingSection extends ConsumerWidget {
-  const _ShippingSection({required this.shippingCost});
+  const _ShippingSection({
+    required this.shippingCost,
+    required this.couponAmount,
+  });
 
   final String shippingCost;
+  final String couponAmount;
+
+  String _subtitle() {
+    final parts = <String>[];
+    if (shippingCost.isNotEmpty) {
+      parts.add('送料 ${shippingCost}円');
+    }
+    if (couponAmount.isNotEmpty) {
+      parts.add('クーポン ${couponAmount}円');
+    }
+    return parts.isEmpty ? '未設定' : parts.join(' / ');
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -237,13 +255,11 @@ class _ShippingSection extends ConsumerWidget {
     return Card(
       child: ExpansionTile(
         title: const Text('送料・割引・ポイント'),
-        subtitle: shippingCost.isEmpty
-            ? const Text('未設定')
-            : Text('送料 ${shippingCost}円'),
-        initiallyExpanded: shippingCost.isEmpty,
+        subtitle: Text(_subtitle()),
+        initiallyExpanded: shippingCost.isEmpty && couponAmount.isEmpty,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
             child: TextFormField(
               initialValue: shippingCost,
               decoration: const InputDecoration(
@@ -255,6 +271,21 @@ class _ShippingSection extends ConsumerWidget {
                 decimal: true,
               ),
               onChanged: notifier.updateShippingCost,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            child: TextFormField(
+              initialValue: couponAmount,
+              decoration: const InputDecoration(
+                labelText: 'クーポン割引',
+                suffixText: '円',
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              onChanged: notifier.updateCouponAmount,
             ),
           ),
         ],
