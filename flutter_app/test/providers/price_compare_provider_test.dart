@@ -199,4 +199,26 @@ void main() {
     final state = container.read(priceCompareProvider);
     expect(state.result?.cheapestByPayable, ComparisonWinner.productA);
   });
+
+  test('使用ポイントを設定して比較できる', () {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    final notifier = container.read(priceCompareProvider.notifier);
+    notifier.updateUsedPoints('500');
+
+    final state = container.read(priceCompareProvider);
+    expect(state.usedPoints, '500');
+  });
+
+  test('獲得ポイントを設定して比較できる', () {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    final notifier = container.read(priceCompareProvider.notifier);
+    notifier.updateEarnedPoints('100');
+
+    final state = container.read(priceCompareProvider);
+    expect(state.earnedPoints, '100');
+  });
 }
