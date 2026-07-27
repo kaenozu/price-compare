@@ -13,16 +13,16 @@ class PriceCompareApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-    title: '価格比較',
-    debugShowCheckedModeBanner: false,
-    theme: ThemeData(
-      colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
-      useMaterial3: true,
-    ),
-    initialRoute: '/',
-    routes: {
-      '/': (_) => const InputScreen(),
-      '/result': (_) => const ResultScreen(),
-    },
-  );
+        title: '価格比較',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
+          useMaterial3: true,
+        ),
+        initialRoute: '/',
+        routes: {
+          '/': (_) => const InputScreen(),
+          '/result': (_) => const ResultScreen(),
+        },
+      );
 }

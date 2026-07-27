@@ -5,6 +5,11 @@ import 'package:price_compare_flutter/main.dart';
 
 void main() {
   testWidgets('価格比較フォームを表示し、必須入力を検証できる', (tester) async {
+    tester.view.physicalSize = const Size(800, 1400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
     await tester.pumpWidget(const ProviderScope(child: PriceCompareApp()));
 
     expect(find.text('商品A'), findsOneWidget);
