@@ -194,6 +194,44 @@ class _ProductInputCard extends StatelessWidget {
                 ),
               ],
             ),
+            const SizedBox(height: 16),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    initialValue: input.discountValue,
+                    decoration: InputDecoration(
+                      labelText: input.discountIsPercent ? '割引率' : '割引額',
+                      suffixText: input.discountIsPercent ? '%' : '円',
+                      border: const OutlineInputBorder(),
+                    ),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    onChanged: (value) =>
+                        onChanged(input.copyWith(discountValue: value)),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                SizedBox(
+                  height: 56,
+                  child: SegmentedButton<bool>(
+                    segments: const [
+                      ButtonSegment(value: false, label: Text('定額')),
+                      ButtonSegment(value: true, label: Text('％')),
+                    ],
+                    selected: {input.discountIsPercent},
+                    onSelectionChanged: (selected) => onChanged(
+                      input.copyWith(
+                        discountIsPercent: selected.first,
+                        discountValue: '',
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
