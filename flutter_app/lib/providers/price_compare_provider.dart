@@ -43,12 +43,14 @@ class ProductInput {
 class PriceCompareState {
   final ProductInput inputA;
   final ProductInput inputB;
+  final String shippingCost;
   final ComparisonResult? result;
   final String? errorMessage;
 
   const PriceCompareState({
     this.inputA = const ProductInput(),
     this.inputB = const ProductInput(),
+    this.shippingCost = '',
     this.result,
     this.errorMessage,
   });
@@ -61,6 +63,7 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
     state = PriceCompareState(
       inputA: input,
       inputB: state.inputB,
+      shippingCost: state.shippingCost,
       result: state.result,
     );
   }
@@ -69,6 +72,16 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
     state = PriceCompareState(
       inputA: state.inputA,
       inputB: input,
+      shippingCost: state.shippingCost,
+      result: state.result,
+    );
+  }
+
+  void updateShippingCost(String shippingCost) {
+    state = PriceCompareState(
+      inputA: state.inputA,
+      inputB: state.inputB,
+      shippingCost: shippingCost,
       result: state.result,
     );
   }
@@ -77,16 +90,17 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
     try {
       final offerA = _toOffer('商品A', state.inputA);
       final offerB = _toOffer('商品B', state.inputB);
-      final zeroShippingContext = PurchaseContext(shippingCost: Money.zero);
+      final context = _toPurchaseContext();
       final result = ComparisonEngine.compare(
         offerA: offerA,
-        contextA: zeroShippingContext,
+        contextA: context,
         offerB: offerB,
-        contextB: zeroShippingContext,
+        contextB: context,
       );
       state = PriceCompareState(
         inputA: state.inputA,
         inputB: state.inputB,
+        shippingCost: state.shippingCost,
         result: result,
       );
       return true;
@@ -99,7 +113,11 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
   }
 
   void clearResult() {
-    state = PriceCompareState(inputA: state.inputA, inputB: state.inputB);
+    state = PriceCompareState(
+      inputA: state.inputA,
+      inputB: state.inputB,
+      shippingCost: state.shippingCost,
+    );
   }
 
   Offer _toOffer(String name, ProductInput input) {
@@ -126,10 +144,18 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
     );
   }
 
+  PurchaseContext _toPurchaseContext() {
+    final shipping = state.shippingCost.trim();
+    return shipping.isEmpty
+        ? PurchaseContext()
+        : PurchaseContext(shippingCost: Money(Decimal(shipping)));
+  }
+
   void _setError(String message) {
     state = PriceCompareState(
       inputA: state.inputA,
       inputB: state.inputB,
+      shippingCost: state.shippingCost,
       errorMessage: message,
     );
   }
