@@ -132,10 +132,17 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
     final value = input.discountValue.trim();
     if (value.isEmpty) return const [];
     final amount = Decimal(value);
-    if (amount <= Decimal.zero) return const [];
+    if (amount < Decimal.zero) {
+      throw ArgumentError(
+        input.discountIsPercent
+            ? '割引率は0〜100%で入力してください'
+            : '割引額は0以上で入力してください',
+      );
+    }
+    if (amount.isZero) return const [];
     if (input.discountIsPercent) {
       if (amount > Decimal('100')) {
-        throw ArgumentError('割引率は100%以下で入力してください');
+        throw ArgumentError('割引率は0〜100%で入力してください');
       }
       return [PercentageDiscount(amount / Decimal('100'))];
     }
@@ -143,9 +150,9 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
   }
 
   Offer _toOffer(String name, ProductInput input) {
-    final price = Decimal(input.displayedPrice);
-    final quantity = Decimal(input.quantity);
-    final taxRatePercent = Decimal(input.taxRatePercent);
+    final price = Decimal(input.displayedPrice.trim());
+    final quantity = Decimal(input.quantity.trim());
+    final taxRatePercent = Decimal(input.taxRatePercent.trim());
 
     if (price < Decimal.zero) {
       throw ArgumentError('表示価格は0以上で入力してください');
@@ -168,21 +175,40 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
   }
 
   PurchaseContext _toPurchaseContext() {
-    final shipping = state.shippingCost.trim();
-    final coupon = state.couponAmount.trim();
-    final used = state.usedPoints.trim();
-    final earned = state.earnedPoints.trim();
-    final shippingCost =
-        shipping.isEmpty ? null : Money(Decimal(shipping));
-    final coupons = coupon.isEmpty
+    final shippingCost = _parseOptionalMoney(state.shippingCost, '送料');
+    final couponAmount = _parseOptionalMoney(state.couponAmount, 'クーポン');
+    final coupons = couponAmount == null
         ? <CouponDiscount>[]
-        : [CouponDiscount(Money(Decimal(coupon)), name: 'クーポン')];
+        : [CouponDiscount(couponAmount, name: 'クーポン')];
+
     return PurchaseContext(
       shippingCost: shippingCost,
       orderCoupons: coupons,
-      usedPoints: used.isEmpty ? 0 : int.parse(used),
-      earnedPoints: earned.isEmpty ? 0 : int.parse(earned),
+      usedPoints: _parsePoints(state.usedPoints, '使用ポイント'),
+      earnedPoints: _parsePoints(state.earnedPoints, '獲得ポイント'),
     );
+  }
+
+  Money? _parseOptionalMoney(String rawValue, String label) {
+    final value = rawValue.trim();
+    if (value.isEmpty) return null;
+
+    final amount = Decimal(value);
+    if (amount < Decimal.zero) {
+      throw ArgumentError('$labelは0以上で入力してください');
+    }
+    return Money(amount);
+  }
+
+  int _parsePoints(String rawValue, String label) {
+    final value = rawValue.trim();
+    if (value.isEmpty) return 0;
+
+    final points = int.tryParse(value);
+    if (points == null || points < 0) {
+      throw ArgumentError('$labelは0以上の整数で入力してください');
+    }
+    return points;
   }
 
   void _setError(String message) {
