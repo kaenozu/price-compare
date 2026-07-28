@@ -54,5 +54,28 @@ void main() {
       expect(result.shippingCost, Money.zero);
       expect(result.payableNow.amount.toPlainString(), '2900');
     });
+
+    test('使用ポイントが支払額を超えても支払額を負にしない', () {
+      final offer = Offer(
+        productName: '商品A',
+        displayedPrice: Money.of('800'),
+        taxMode: TaxMode.taxIncluded,
+        taxRate: Decimal('0.1'),
+        quantity: Quantity(value: Decimal('1'), unit: ComparisonUnit.count),
+      );
+      final context = PurchaseContext(
+        shippingCost: Money.of('200'),
+        usedPoints: 1500,
+      );
+
+      final result = PriceCalculator.calculate(offer, context);
+
+      expect(result.pointRedemption.amount.toPlainString(), '1000');
+      expect(result.payableNow, Money.zero);
+      expect(
+        result.warnings,
+        contains('使用ポイントが支払額を上回るため、支払額までに制限しました'),
+      );
+    });
   });
 }

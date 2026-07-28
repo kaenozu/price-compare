@@ -41,10 +41,18 @@ abstract final class PriceCalculator {
     }
     final shippingForCalculation = effectiveShipping ?? Money.zero;
 
-    final pointRedemption = context.usedPointsValue();
-    final payableNow = couponResult.discountedAmount +
-        shippingForCalculation -
-        pointRedemption;
+    final payableBeforePoints =
+        couponResult.discountedAmount + shippingForCalculation;
+    final requestedPointRedemption = context.usedPointsValue();
+    final pointRedemption =
+        requestedPointRedemption.compareTo(payableBeforePoints) > 0
+            ? payableBeforePoints
+            : requestedPointRedemption;
+    if (pointRedemption != requestedPointRedemption) {
+      warnings.add('使用ポイントが支払額を上回るため、支払額までに制限しました');
+    }
+
+    final payableNow = payableBeforePoints - pointRedemption;
     final earnedPointsValue = context.earnedPointsValue();
     final effectiveCost = payableNow - earnedPointsValue;
     if (effectiveCost.isNegative) {
