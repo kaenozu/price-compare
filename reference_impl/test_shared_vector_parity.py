@@ -21,24 +21,24 @@ def test_shared_vectors_match_python_reference() -> None:
         offer = {
             "product_name": case["name"],
             "store_name": "",
-            "displayed_price": case["displayedPrice"],
+            "displayed_price": Decimal(case["displayedPrice"]),
             "tax_mode": (
                 "INCLUDED" if case["taxMode"] == "included" else "EXCLUDED"
             ),
-            "tax_rate": case["taxRate"],
+            "tax_rate": Decimal(case["taxRate"]),
             "quantity": {
-                "value": case["quantity"],
+                "value": Decimal(case["quantity"]),
                 "unit": case["unit"],
             },
             "discounts": [],
         }
         context = {
-            "shipping_cost": case["shippingCost"],
+            "shipping_cost": Decimal(case["shippingCost"]),
             "free_shipping_threshold": None,
             "order_coupons": [],
             "used_points": case["usedPoints"],
             "earned_points": case["earnedPoints"],
-            "point_evaluation_rate": case["pointEvaluationRate"],
+            "point_evaluation_rate": Decimal(case["pointEvaluationRate"]),
         }
 
         result = calculate(offer, context)
