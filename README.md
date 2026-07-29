@@ -5,10 +5,12 @@
 ## 現在地
 
 - Kotlin Multiplatform製の価格計算コアを実装済み
-- `flutter_app/` にFlutter + Riverpodの最小UIとDart版計算エンジンを実装済み
+- `flutter_app/` にFlutter + RiverpodのUIとDart版計算エンジンを実装済み
+- 商品A/Bごとに割引、送料、クーポン、使用ポイント、獲得ポイントを入力可能
 - Flutterの静的解析、単体テスト、Providerテスト、UIスモークテストをGitHub Actionsで実行
 - Kotlin計算エンジンの`jvmTest`もGitHub Actionsで実行
-- Androidプラットフォーム雛形（`flutter_app/android/`）は未コミットのため、APK実機確認は次の最優先タスク
+- Androidプラットフォーム雛形をコミット済みで、CIのDebug APKビルドに成功
+- Android実機での入力→比較結果スモークテストとRelease署名は未確認
 
 ## 採用路線
 
@@ -32,6 +34,7 @@ Flutter実装をプライマリクライアントとし、`main`を統合先と�
 src/                    Kotlin Multiplatform版の価格計算コア
 reference_impl/         Python参照実装
 flutter_app/
+  android/              Androidプラットフォーム設定
   lib/engine/           Dart版の価格計算ロジック
   lib/providers/        Riverpod状態管理
   lib/ui/               商品入力・比較結果UI
@@ -46,6 +49,7 @@ flutter pub get
 dart format --output=none --set-exit-if-changed lib test
 flutter analyze --fatal-infos
 flutter test
+flutter build apk --debug
 ```
 
 Flutter SDKはCIと同じ`3.44.0`を基準にします。
@@ -66,10 +70,10 @@ Wrapperを復旧した後は、環境差を抑えるため`./gradlew jvmTest`を
 
 1. `main`をGitHubの既定ブランチに設定し、必須CIチェックを有効化する
 2. Gradle Wrapper JARをGradle 8.7で再生成・コミットし、CIを`./gradlew`へ戻す
-3. Androidプラットフォーム雛形を生成し、applicationId、アプリ名、minSdk/targetSdk、署名除外を確定する
-4. Android Debug APKをCIでビルドし、入力→比較結果までの実機スモークテストを行う
+3. Android実機で入力→比較結果までのスモークテストを行う
+4. applicationId、アプリ名、minSdk/targetSdk、Release署名方針を公開用設定として確定する
 5. Kotlin/Dart間の共通テストベクトルによるパリティテストを追加する
-6. 商品名、店舗名、送料、割引、クーポン、ポイント入力をUIへ段階的に追加する
+6. 商品名・店舗名と、比較条件を入力しやすくするUXを追加する
 7. ローカル保存、比較履歴、AdMob/Billingは計算・入力UXが安定してから導入する
 
 詳細仕様は[SPEC.md](SPEC.md)を参照してください。
