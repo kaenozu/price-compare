@@ -48,26 +48,60 @@ class ProductInput {
       );
 }
 
-class PriceCompareState {
-  final ProductInput inputA;
-  final ProductInput inputB;
+class PurchaseContextInput {
   final String shippingCost;
   final String couponAmount;
   final String usedPoints;
   final String earnedPoints;
+
+  const PurchaseContextInput({
+    this.shippingCost = '',
+    this.couponAmount = '',
+    this.usedPoints = '',
+    this.earnedPoints = '',
+  });
+
+  bool get hasAny =>
+      [shippingCost, couponAmount, usedPoints, earnedPoints]
+          .any((value) => value.isNotEmpty);
+
+  PurchaseContextInput copyWith({
+    String? shippingCost,
+    String? couponAmount,
+    String? usedPoints,
+    String? earnedPoints,
+  }) =>
+      PurchaseContextInput(
+        shippingCost: shippingCost ?? this.shippingCost,
+        couponAmount: couponAmount ?? this.couponAmount,
+        usedPoints: usedPoints ?? this.usedPoints,
+        earnedPoints: earnedPoints ?? this.earnedPoints,
+      );
+}
+
+class PriceCompareState {
+  final ProductInput inputA;
+  final ProductInput inputB;
+  final PurchaseContextInput contextA;
+  final PurchaseContextInput contextB;
   final ComparisonResult? result;
   final String? errorMessage;
 
   const PriceCompareState({
     this.inputA = const ProductInput(),
     this.inputB = const ProductInput(),
-    this.shippingCost = '',
-    this.couponAmount = '',
-    this.usedPoints = '',
-    this.earnedPoints = '',
+    this.contextA = const PurchaseContextInput(),
+    this.contextB = const PurchaseContextInput(),
     this.result,
     this.errorMessage,
   });
+
+  // Compatibility getters for callers written before purchase conditions became
+  // product-specific. Legacy update methods below continue to update both sides.
+  String get shippingCost => contextA.shippingCost;
+  String get couponAmount => contextA.couponAmount;
+  String get usedPoints => contextA.usedPoints;
+  String get earnedPoints => contextA.earnedPoints;
 }
 
 class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
@@ -76,19 +110,15 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
   void _updateState({
     ProductInput? inputA,
     ProductInput? inputB,
-    String? shippingCost,
-    String? couponAmount,
-    String? usedPoints,
-    String? earnedPoints,
+    PurchaseContextInput? contextA,
+    PurchaseContextInput? contextB,
     ComparisonResult? result,
   }) {
     state = PriceCompareState(
       inputA: inputA ?? state.inputA,
       inputB: inputB ?? state.inputB,
-      shippingCost: shippingCost ?? state.shippingCost,
-      couponAmount: couponAmount ?? state.couponAmount,
-      usedPoints: usedPoints ?? state.usedPoints,
-      earnedPoints: earnedPoints ?? state.earnedPoints,
+      contextA: contextA ?? state.contextA,
+      contextB: contextB ?? state.contextB,
       result: result,
     );
   }
@@ -97,24 +127,47 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
 
   void updateInputB(ProductInput input) => _updateState(inputB: input);
 
-  void updateShippingCost(String v) => _updateState(shippingCost: v);
+  void updateContextA(PurchaseContextInput input) =>
+      _updateState(contextA: input);
 
-  void updateCouponAmount(String v) => _updateState(couponAmount: v);
+  void updateContextB(PurchaseContextInput input) =>
+      _updateState(contextB: input);
 
-  void updateUsedPoints(String v) => _updateState(usedPoints: v);
+  // Backward-compatible shared updates. New UI code must use updateContextA/B.
+  void updateShippingCost(String value) => _updateBothContexts(
+        (input) => input.copyWith(shippingCost: value),
+      );
 
-  void updateEarnedPoints(String v) => _updateState(earnedPoints: v);
+  void updateCouponAmount(String value) => _updateBothContexts(
+        (input) => input.copyWith(couponAmount: value),
+      );
+
+  void updateUsedPoints(String value) => _updateBothContexts(
+        (input) => input.copyWith(usedPoints: value),
+      );
+
+  void updateEarnedPoints(String value) => _updateBothContexts(
+        (input) => input.copyWith(earnedPoints: value),
+      );
+
+  void _updateBothContexts(
+    PurchaseContextInput Function(PurchaseContextInput input) update,
+  ) {
+    _updateState(
+      contextA: update(state.contextA),
+      contextB: update(state.contextB),
+    );
+  }
 
   bool compare() {
     try {
       final offerA = _toOffer('商品A', state.inputA);
       final offerB = _toOffer('商品B', state.inputB);
-      final context = _toPurchaseContext();
       final result = ComparisonEngine.compare(
         offerA: offerA,
-        contextA: context,
+        contextA: _toPurchaseContext(state.contextA),
         offerB: offerB,
-        contextB: context,
+        contextB: _toPurchaseContext(state.contextB),
       );
       _updateState(result: result);
       return true;
@@ -174,9 +227,9 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
     );
   }
 
-  PurchaseContext _toPurchaseContext() {
-    final shippingCost = _parseOptionalMoney(state.shippingCost, '送料');
-    final couponAmount = _parseOptionalMoney(state.couponAmount, 'クーポン');
+  PurchaseContext _toPurchaseContext(PurchaseContextInput input) {
+    final shippingCost = _parseOptionalMoney(input.shippingCost, '送料');
+    final couponAmount = _parseOptionalMoney(input.couponAmount, 'クーポン');
     final coupons = couponAmount == null
         ? <CouponDiscount>[]
         : [CouponDiscount(couponAmount, name: 'クーポン')];
@@ -184,8 +237,8 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
     return PurchaseContext(
       shippingCost: shippingCost,
       orderCoupons: coupons,
-      usedPoints: _parsePoints(state.usedPoints, '使用ポイント'),
-      earnedPoints: _parsePoints(state.earnedPoints, '獲得ポイント'),
+      usedPoints: _parsePoints(input.usedPoints, '使用ポイント'),
+      earnedPoints: _parsePoints(input.earnedPoints, '獲得ポイント'),
     );
   }
 
@@ -215,10 +268,8 @@ class PriceCompareNotifier extends StateNotifier<PriceCompareState> {
     state = PriceCompareState(
       inputA: state.inputA,
       inputB: state.inputB,
-      shippingCost: state.shippingCost,
-      couponAmount: state.couponAmount,
-      usedPoints: state.usedPoints,
-      earnedPoints: state.earnedPoints,
+      contextA: state.contextA,
+      contextB: state.contextB,
       errorMessage: message,
     );
   }
